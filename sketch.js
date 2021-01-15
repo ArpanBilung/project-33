@@ -1,66 +1,108 @@
-const Engine = Matter.Engine;
-const World = Matter.World;
-const Bodies = Matter.Bodies;
-
-var engine, world;
-
-var divisions = [];
-var particles = [];
+var Engine = Matter.Engine;
+ World = Matter.World;
+ Events = Matter.Events
+ Bodies = Matter.Bodies;
+var particle;
 var plinkos = [];
-var score = 0;
-var divisionHeight = 300;
-
+var divisions = [];
+var divisionHeight=300;
+var score =0;
+var gameState="play",points=0;
 function setup() {
-
-    createCanvas(480, 750);
-
-    engine = Engine.create();
-    world = engine.world;
-
-
-    border1 = new Ground(240, 748, 480, 15);
-    border2 = new Ground(2, 375, 15, 750);
-    border3 = new Ground(478, 375, 15, 750);
-
-    for (var i = 0; i <= 480; i = i + 80) {
-        divisions.push(new Bar(i, 750 - 300 / 2, 10, 300));
+  createCanvas(800, 800);
+  engine = Engine.create();
+  world = engine.world;
+  ground = new Ground(width/2,height,width,20);
+   for (var k = 0; k <=width; k = k + 80) {
+     divisions.push(new Divisions(k, height-divisionHeight/2, 10, divisionHeight));
+   }
+    for (var j = 75; j <=width; j=j+50) 
+    {
+       plinkos.push(new Plinko(j,75));
     }
-    for (var k = 40; k <= 470; k = k + 50) {
-        plinkos.push(new Plinko(k, 75));
+    for (var j = 50; j <=width-10; j=j+50) 
+    {
+       plinkos.push(new Plinko(j,175));
     }
-    for (var k = 80; k <= 460; k = k + 50) {
-        plinkos.push(new Plinko(k, 175));
+     for (var j = 75; j <=width; j=j+50) 
+    {
+       plinkos.push(new Plinko(j,275));
     }
-    for (var k = 40; k <= 480; k = k + 50) {
-        plinkos.push(new Plinko(k, 275));
+     for (var j = 50; j <=width-10; j=j+50) 
+    {
+       plinkos.push(new Plinko(j,375));
     }
-    for (var k = 80; k <= 400; k = k + 50) {
-        plinkos.push(new Plinko(k, 375));
-    }
-
 }
-
 function draw() {
-    background(0);
-    Engine.update(engine);
-    border1.display();
-    border2.display();
-    border3.display();
-        text("Score  " + score, width-255, 300)
+  background("black");
+  textSize(20)
+  text("score:"+score,10,40);
+  text(" 500 ", 20, 550);
+  text(" 500 ", 100, 550);
+  text(" 500 ", 180, 550);
+  text(" 500 ", 260, 550);
+  text(" 100 ", 340, 550);
+  text(" 100 ", 420, 550);
+  text(" 100 ", 500, 550);
+  text(" 200 ", 580, 550);
+  text(" 200 ", 660, 550);
+  text(" 200 ", 740, 550);
+  fill("white"); 
+  Engine.update(engine);
+  ground.display();
+  if(gameState=="end"){
+    textSize(100);
+    text("GAME OVER!",150,250);
+  }
+   for (var i = 0; i < plinkos.length; i++) {  
+     plinkos[i].display();  
+   }
+   if(particle!=null)
+   {
+      particle.display();
+       
+       if (particle.body.position.y>760)
+       {
+             if (particle.body.position.x < 300) 
+             {
+                 score=score+500;      
+                 particle=null;
+                 if ( points>= 5) gameState ="end";                          
+             }
+             else if (particle.body.position.x < 600 && particle.body.position.x > 301 ) 
+             {
+                   score = score + 100;
+                   particle=null;
+                   if ( points>= 5) gameState ="end";
 
+             }
+             else if (particle.body.position.x < 900 && particle.body.position.x > 601 )
+             {
+                   score = score + 200;
+                   particle=null;
+                   if ( points>= 5)  gameState ="end";
 
-    if (frameCount % 60 === 0) {
-        particles.push(new Particle(random(width / 2 - 50, width / 2 + 50), 0, 11));
-    }
-    for (var a = 0; a < particles.length; a++) {
-        particles[a].display();
-    }
-
-    for (var m = 0; m < divisions.length; m++) {
-
-        divisions[m].display();
-    }
-    for (var i = 0; i < plinkos.length; i++) {
-        plinkos[i].display();
-    }
+             }      
+  
+  
+ 
+  
+  
+  
 }
+
+
+   }
+   for (var i = 0; i < divisions.length; i++) {  
+    divisions[i].display();  
+  }
+  }
+  function mousePressed()
+{
+  if(gameState!=="end")
+  {
+      points++;
+     particle=new Particle(mouseX, 10, 10, 10); 
+  }   
+}
+
